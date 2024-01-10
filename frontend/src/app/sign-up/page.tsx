@@ -3,24 +3,38 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import Link from "next/link";
 
-export default function Home() {
+export default function SignUp() {
    return (
       <div className="w-full max-w-md space-y-8">
          <div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-               Sign in to your account
+               Sign up for a new account
             </h2>
             <p className="mt-2 text-center text-sm text-gray-300">
                <Link
                   className="font-medium text-indigo-400 hover:text-indigo-500"
-                  href="/sign-up"
+                  href="/"
                >
-                  Or create account
+                  Or sign in to your existing account
                </Link>
             </p>
          </div>
          <form action="#" className="mt-8 space-y-6" method="POST">
             <div className="-space-y-px rounded-md shadow-sm">
+               <div>
+                  <Label className="sr-only" htmlFor="username">
+                     Username
+                  </Label>
+                  <Input
+                     autoComplete="username"
+                     className="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                     id="username"
+                     name="username"
+                     placeholder="Username"
+                     required
+                     type="text"
+                  />
+               </div>
                <div>
                   <Label className="sr-only" htmlFor="email-address">
                      Email address
@@ -40,7 +54,7 @@ export default function Home() {
                      Password
                   </Label>
                   <Input
-                     autoComplete="current-password"
+                     autoComplete="new-password"
                      className="relative block w-full appearance-none rounded-none rounded-b-md border border-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                      id="password"
                      name="password"
@@ -48,30 +62,6 @@ export default function Home() {
                      required
                      type="password"
                   />
-               </div>
-            </div>
-            <div className="flex items-center justify-between">
-               <div className="flex items-center">
-                  <Input
-                     className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                     id="remember-me"
-                     name="remember-me"
-                     type="checkbox"
-                  />
-                  <Label
-                     className="ml-2 block text-sm text-gray-300"
-                     htmlFor="remember-me"
-                  >
-                     Remember me
-                  </Label>
-               </div>
-               <div className="text-sm">
-                  <a
-                     className="font-medium text-indigo-400 hover:text-indigo-500"
-                     href="#"
-                  >
-                     Forgot your password?
-                  </a>
                </div>
             </div>
             <div>
@@ -94,7 +84,7 @@ export default function Home() {
                         />
                      </svg>
                   </span>
-                  Sign in
+                  Sign up
                </Button>
             </div>
          </form>
