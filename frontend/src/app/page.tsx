@@ -1,9 +1,9 @@
-import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
-export default function Home() {
+const HomePage = () => {
    return (
       <div className="w-full max-w-md space-y-8">
          <div>
@@ -100,4 +100,6 @@ export default function Home() {
          </form>
       </div>
    );
-}
+};
+
+export default HomePage;
