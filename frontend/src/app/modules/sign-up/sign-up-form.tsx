@@ -4,16 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { SignUpForm, signUpFormSchema } from "./sign-up-form-schema";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-interface SignUpFormProps {}
-
-const SignUpForm = ({}: SignUpFormProps) => {
+const SignUpForm = () => {
    const {
-      watch,
       register,
       handleSubmit,
       formState: { errors },
@@ -22,9 +20,13 @@ const SignUpForm = ({}: SignUpFormProps) => {
    });
 
    const { mutate: signUpMutation } = useMutation({
-      mutationFn: async (signUpData: SignUpForm) => {
-         return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/auth`, {
-            body: JSON.stringify(signUpData),
+      mutationFn: async ({ email, password, username }: SignUpForm) => {
+         return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/sign-up`, {
+            body: JSON.stringify({
+               email,
+               username,
+               password,
+            }),
             method: "POST",
          });
       },
