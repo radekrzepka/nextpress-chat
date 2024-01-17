@@ -37,7 +37,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
                         Your go-to live chat app where you can effortlessly chat
                         with friends and create groups for endless
                         conversations. Connect, share, and stay close - all in
-                        real-time. Let's start chatting!
+                        real-time. Let&apos;s start chatting!
                      </p>
                      <div>
                         <h2 className="mb-2 mt-6 text-2xl font-bold text-white">
