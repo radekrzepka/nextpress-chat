@@ -1,28 +1,16 @@
-import express, { Express, Request, Response } from "express";
-import swaggerUi from "swagger-ui-express";
-import swaggerJSDoc from "swagger-jsdoc";
+import type { Express } from "express";
+import express from "express";
 import userAuthRoutes from "./routes/user/userAuthRoutes";
+import cors from "cors";
+import bodyParser from "body-parser";
 
 const app: Express = express();
 const port = process.env.PORT || 3001;
 
-const swaggerDefinition = {
-   openapi: "3.0.0",
-   info: {
-      title: "Express API with Swagger",
-      version: "1.0.0",
-   },
-};
-
-const options = {
-   swaggerDefinition,
-   apis: ["./src/docs/**/*.yaml"],
-};
-
-const swaggerSpec = swaggerJSDoc(options);
-
 app.use(express.json());
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(cors());
+app.use(bodyParser.json());
+
 app.use(userAuthRoutes);
 
 app.listen(port, () => {

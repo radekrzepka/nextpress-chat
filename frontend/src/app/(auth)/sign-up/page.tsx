@@ -1,5 +1,5 @@
 import Link from "next/link";
-import SignUpForm from "../modules/sign-up/sign-up-form";
+import SignUpForm from "@/modules/sign-up/sign-up-form";
 
 const SignUpPage = () => {
    return (
@@ -11,7 +11,7 @@ const SignUpPage = () => {
             <p className="mt-2 text-center text-sm text-gray-300">
                <Link
                   className="font-medium text-indigo-400 hover:text-indigo-500"
-                  href="/"
+                  href="/sign-in"
                >
                   Or sign in to your existing account
                </Link>
