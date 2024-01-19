@@ -16,12 +16,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
    return (
       <html lang="en">
-         <body
-            className={cn(
-               inter.className,
-               "flex min-h-screen flex-col items-center justify-center bg-gray-900 px-4 pt-12 sm:px-6"
-            )}
-         >
+         <body className={cn(inter.className, "bg-gray-900 px-4 sm:px-6")}>
             <ThemeProvider
                attribute="class"
                defaultTheme="dark"
@@ -29,36 +24,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
                disableTransitionOnChange
             >
                <QueryProvider>
-                  <header className="w-full py-6 text-center">
-                     <h1 className="text-4xl font-bold text-white">
-                        Live chat app
-                     </h1>
-                     <p className="mx-auto mt-2 text-lg text-gray-300 lg:w-1/2">
-                        Your go-to live chat app where you can effortlessly chat
-                        with friends and create groups for endless
-                        conversations. Connect, share, and stay close - all in
-                        real-time. Let&apos;s start chatting!
-                     </p>
-                     <div>
-                        <h2 className="mb-2 mt-6 text-2xl font-bold text-white">
-                           Technologies powering Live chat app
-                        </h2>
-                        <ul className="list-inside list-disc">
-                           <li>Frontend: Built with Next.js</li>
-                           <li>
-                              Backend: Built with Express.js and PostgreSQL
-                           </li>
-                        </ul>
-                     </div>
-                  </header>
                   {children}
-                  <footer className="mt-auto w-full py-6 text-center">
-                     <p className="text-sm text-gray-300">
-                        <a href="https://github.com/radekrzepka">
-                           Made by @Radosław Rzepka
-                        </a>
-                     </p>
-                  </footer>
                   <Toaster richColors />
                </QueryProvider>
             </ThemeProvider>

@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { SignUpForm, signUpFormSchema } from "./sign-up-form-schema";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { getCookie } from "cookies-next";
 
 const SignUpForm = () => {
    const {
@@ -22,6 +23,9 @@ const SignUpForm = () => {
    const { mutate: signUpMutation } = useMutation({
       mutationFn: async ({ email, password, username }: SignUpForm) => {
          return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/sign-up`, {
+            headers: {
+               "Content-Type": "application/json",
+            },
             body: JSON.stringify({
                email,
                username,
@@ -32,6 +36,8 @@ const SignUpForm = () => {
       },
       onSuccess: () => {
          toast.success("Success");
+         const test = getCookie("JWT");
+         console.log(test);
       },
       onError: () => {
          toast.error("Error");
@@ -39,7 +45,6 @@ const SignUpForm = () => {
    });
 
    const onSubmit: SubmitHandler<SignUpForm> = data => {
-      console.log("duupsko");
       signUpMutation(data);
    };
 
