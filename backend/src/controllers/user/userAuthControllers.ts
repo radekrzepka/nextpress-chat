@@ -16,7 +16,7 @@ const prisma = new PrismaClient();
 
 export const signIn = async (req: Request, res: Response) => {
    const parsedReqBody = signInSchema.safeParse(req.body);
-   if (!parsedReqBody.success) return res.status(400).send("Invalid request");
+   if (!parsedReqBody.success) return res.status(400).json("Invalid request");
    const { email, password } = parsedReqBody.data;
 
    const user = await prisma.user.findFirst({
@@ -52,7 +52,7 @@ export const signIn = async (req: Request, res: Response) => {
 
 export const signUp = async (req: Request, res: Response) => {
    const parsedReqBody = signUpSchema.safeParse(req.body);
-   if (!parsedReqBody.success) return res.status(400).send("Invalid request");
+   if (!parsedReqBody.success) return res.status(400).json("Invalid request");
    const { email, username, password } = parsedReqBody.data;
 
    const existingUser = await prisma.user.findFirst({
@@ -98,27 +98,35 @@ export const signUp = async (req: Request, res: Response) => {
          subject: "Confirm email",
          text: `Thanks for creating account in live chat app. Please go to this link to authenticate your email ${process.env.FRONTEND_URL}/confirm-email/${newUser.ConfirmEmailToken?.token}`,
       });
-      res.status(200).send("Email sent successfully");
+      res.status(200).json("Email sent successfully");
    } catch (error) {
       console.error(error);
-      res.status(500).send("Error during sending email");
+      res.status(500).json("Error during sending email");
    }
 };
 
 export const validateEmailToken = async (req: Request, res: Response) => {
    const parsedReqToken = tokenSchema.safeParse(req.params.token);
-   if (!parsedReqToken.success) return res.status(400).send("Invalid request");
+   console.log(req);
+   if (!parsedReqToken.success) return res.status(400).json("Invalid request");
    const token = parsedReqToken.data;
 
    const foundedToken = await prisma.confirmEmailToken.findUnique({
       where: {
          token,
-         isTokenAuthenticated: false,
       },
    });
 
    if (!foundedToken) {
-      return res.status(400).send("Token not founded");
+      return res.status(400).json("Token not founded");
+   }
+
+   if (foundedToken.isTokenAuthenticated) {
+      return res.status(200).json({
+         title: "Account already authenticated",
+         description:
+            "This account has already been authorized before, you can log in",
+      });
    }
 
    await prisma.confirmEmailToken.update({
@@ -130,18 +138,22 @@ export const validateEmailToken = async (req: Request, res: Response) => {
       },
    });
 
-   res.status(200).send("Account authenticated successfully");
+   res.status(200).json({
+      title: "Account authenticated successfully",
+      description:
+         "You have successfully authenticated your account, you can log in",
+   });
 };
 
 export const sendForgotPasswordMail = async (req: Request, res: Response) => {
    const parsedReqBody = forgotPasswordSchema.safeParse(req.body);
-   if (!parsedReqBody.success) return res.status(400).send("Invalid request");
+   if (!parsedReqBody.success) return res.status(400).json("Invalid request");
    const { email } = parsedReqBody.data;
 
    const user = await prisma.user.findUnique({ where: { email } });
 
    if (!user) {
-      return res.status(400).send("User not found");
+      return res.status(400).json("User not found");
    }
 
    const token = crypto.randomBytes(20).toString("hex");
@@ -163,10 +175,10 @@ export const sendForgotPasswordMail = async (req: Request, res: Response) => {
          subject: "Forgot Password",
          text: `Your password reset link is ${process.env.FRONTEND_URL}/forgot-password/${token}`,
       });
-      res.status(200).send("Email sent successfully");
+      res.status(200).json("Email sent successfully");
    } catch (error) {
       console.error(error);
-      res.status(500).send("Error during sending email");
+      res.status(500).json("Error during sending email");
    }
 };
 
@@ -175,7 +187,7 @@ export const validateForgotPasswordToken = async (
    res: Response
 ) => {
    const parsedReqToken = tokenSchema.safeParse(req.params.token);
-   if (!parsedReqToken.success) return res.status(400).send("Invalid request");
+   if (!parsedReqToken.success) return res.status(400).json("Invalid request");
    const token = parsedReqToken.data;
 
    const foundedToken = await prisma.passwordForgotToken.findUnique({
@@ -189,19 +201,19 @@ export const validateForgotPasswordToken = async (
    });
 
    if (!foundedToken) {
-      return res.status(400).send("Token not founded");
+      return res.status(400).json("Token not founded");
    }
 
-   res.status(200).send("Token founded successfully");
+   res.status(200).json("Token founded successfully");
 };
 
 export const updateForgottenPassword = async (req: Request, res: Response) => {
    const parsedReqToken = tokenSchema.safeParse(req.params.token);
-   if (!parsedReqToken.success) return res.status(400).send("Invalid request");
+   if (!parsedReqToken.success) return res.status(400).json("Invalid request");
    const token = parsedReqToken.data;
 
    const parsedReqBody = updateForgottenPasswordSchema.safeParse(req.body);
-   if (!parsedReqBody.success) return res.status(400).send("Invalid request");
+   if (!parsedReqBody.success) return res.status(400).json("Invalid request");
    const { newPassword } = parsedReqBody.data;
 
    const hash = bcrypt.hashSync(newPassword, 10);
@@ -216,7 +228,7 @@ export const updateForgottenPassword = async (req: Request, res: Response) => {
       },
    });
 
-   if (!updatingUser) return res.status(400).send("Invalid request");
+   if (!updatingUser) return res.status(400).json("Invalid request");
 
    await prisma.user.update({
       where: {
@@ -227,5 +239,5 @@ export const updateForgottenPassword = async (req: Request, res: Response) => {
       },
    });
 
-   res.status(200).send("Password updated successfully");
+   res.status(200).json("Password updated successfully");
 };
