@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const SignInForm = () => {
    return (
-      <form action="#" className="mt-8 space-y-6" method="POST">
+      <form action="#" className="mt-8 max-w-md space-y-6" method="POST">
          <div className="-space-y-px rounded-md shadow-sm">
             <div>
                <Label className="sr-only" htmlFor="email-address">

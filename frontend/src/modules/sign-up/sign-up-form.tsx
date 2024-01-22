@@ -9,7 +9,10 @@ import { useForm } from "react-hook-form";
 import { SignUpForm, signUpFormSchema } from "./sign-up-form-schema";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { getCookie } from "cookies-next";
+import apiFetch from "@/utils/fetch";
+import type { ApiError } from "@/types/api-error";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
 
 const SignUpForm = () => {
    const {
@@ -19,13 +22,15 @@ const SignUpForm = () => {
    } = useForm<SignUpForm>({
       resolver: zodResolver(signUpFormSchema),
    });
+   const router = useRouter();
 
-   const { mutate: signUpMutation } = useMutation({
-      mutationFn: async ({ email, password, username }: SignUpForm) => {
-         return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/sign-up`, {
-            headers: {
-               "Content-Type": "application/json",
-            },
+   const { mutate: signUpMutation, isPending } = useMutation<
+      string,
+      ApiError,
+      SignUpForm
+   >({
+      mutationFn: async ({ email, username, password }: SignUpForm) => {
+         return apiFetch<string>("/user/sign-up", {
             body: JSON.stringify({
                email,
                username,
@@ -35,12 +40,11 @@ const SignUpForm = () => {
          });
       },
       onSuccess: () => {
+         router.push("/confirm-email");
          toast.success("Success");
-         const test = getCookie("JWT");
-         console.log(test);
       },
-      onError: () => {
-         toast.error("Error");
+      onError: error => {
+         toast.error(error.message);
       },
    });
 
@@ -48,8 +52,13 @@ const SignUpForm = () => {
       signUpMutation(data);
    };
 
+   console.log(isPending);
+
    return (
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <form
+         className="mt-8 max-w-md space-y-6"
+         onSubmit={handleSubmit(onSubmit)}
+      >
          <div className="-space-y-px rounded-md shadow-sm">
             <div>
                <Label className="sr-only" htmlFor="email-address">
@@ -112,7 +121,11 @@ const SignUpForm = () => {
             <Button
                className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                type="submit"
+               disabled={isPending}
             >
+               {isPending && (
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+               )}
                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   <svg
                      aria-hidden="true"
