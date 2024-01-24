@@ -37,7 +37,7 @@ const ResetPasswordEmailForm = () => {
          });
       },
       onSuccess: () => {
-         toast.success("Password reseted, check your email");
+         toast.success("Password has been reset, check your email");
       },
       onError: error => {
          toast.error(error.message);

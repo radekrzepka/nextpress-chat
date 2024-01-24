@@ -43,6 +43,7 @@ const SignInForm = () => {
          });
       },
       onSuccess: token => {
+         toast.success("Logged in");
          setCookie("JWT", token);
          router.push("/");
       },
