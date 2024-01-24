@@ -1,4 +1,5 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
+import type { Request } from "@/types/request";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -14,10 +15,12 @@ import { sendMail } from "../../services/email-services";
 
 const prisma = new PrismaClient();
 
+const MILLISECONDS_IN_HOURS = 60 * 60 * 1000;
+
 export const signIn = async (req: Request, res: Response) => {
    const parsedReqBody = signInSchema.safeParse(req.body);
    if (!parsedReqBody.success) return res.status(400).json("Invalid request");
-   const { email, password } = parsedReqBody.data;
+   const { email, password, rememberMe } = parsedReqBody.data;
 
    const user = await prisma.user.findFirst({
       where: {
@@ -28,11 +31,13 @@ export const signIn = async (req: Request, res: Response) => {
       },
    });
 
+   console.log(user);
+
    if (!user) {
       return res.status(401).json({ message: "Please provide correct email" });
    }
 
-   if (user.ConfirmEmailToken?.isTokenAuthenticated) {
+   if (!user.ConfirmEmailToken?.isTokenAuthenticated) {
       return res.status(401).json({ message: "Email not authenticated" });
    }
 
@@ -44,10 +49,48 @@ export const signIn = async (req: Request, res: Response) => {
          .json({ message: "Please provide correct password" });
    }
 
-   const token = jwt.sign({ userId: user.id }, process.env.PORT as string);
+   const tokenDuration = rememberMe
+      ? 365 * 24 * MILLISECONDS_IN_HOURS
+      : 1 * MILLISECONDS_IN_HOURS;
 
-   res.cookie("JWT", token);
+   const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET_KEY as string,
+      { expiresIn: tokenDuration }
+   );
+
+   res.status(200);
    res.json(token);
+};
+
+export const checkJWT = async (req: Request, res: Response) => {
+   const JWT = req.headers.authorization;
+
+   if (!JWT) {
+      return res.status(401).json({ message: "No token provided" });
+   }
+
+   try {
+      const decoded = jwt.verify(
+         JWT,
+         process.env.JWT_SECRET_KEY as string
+      ) as jwt.JwtPayload;
+      const userId = decoded.userId as string;
+
+      const userExists = await prisma.user.findUnique({
+         where: {
+            id: userId,
+         },
+      });
+
+      if (!userExists) {
+         return res.status(404).json({ message: "User not found" });
+      }
+
+      res.status(200).json("Authenticated");
+   } catch (error) {
+      res.status(401).json({ message: "Invalid token" });
+   }
 };
 
 export const signUp = async (req: Request, res: Response) => {
@@ -107,7 +150,7 @@ export const signUp = async (req: Request, res: Response) => {
 
 export const validateEmailToken = async (req: Request, res: Response) => {
    const parsedReqToken = tokenSchema.safeParse(req.params.token);
-   console.log(req);
+
    if (!parsedReqToken.success) return res.status(400).json("Invalid request");
    const token = parsedReqToken.data;
 
