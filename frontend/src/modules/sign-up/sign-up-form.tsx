@@ -41,7 +41,6 @@ const SignUpForm = () => {
       },
       onSuccess: () => {
          router.push("/confirm-email");
-         toast.success("Success");
       },
       onError: error => {
          toast.error(error.message);
@@ -51,8 +50,6 @@ const SignUpForm = () => {
    const onSubmit: SubmitHandler<SignUpForm> = data => {
       signUpMutation(data);
    };
-
-   console.log(isPending);
 
    return (
       <form
