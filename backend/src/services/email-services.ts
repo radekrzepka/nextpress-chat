@@ -21,12 +21,10 @@ export const sendMail = (mailData: Omit<MailData, "from">): Promise<void> => {
    return new Promise((resolve, reject) => {
       transporter.sendMail(
          { ...mailData, from: process.env.MAIL_FROM },
-         (err, info) => {
+         err => {
             if (err) {
-               console.error(err);
                reject(err);
             } else {
-               console.log(info);
                resolve();
             }
          }

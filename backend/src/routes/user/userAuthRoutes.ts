@@ -1,5 +1,6 @@
 import {
    signIn,
+   checkJWT,
    signUp,
    sendForgotPasswordMail,
    validateForgotPasswordToken,
@@ -11,6 +12,7 @@ import express from "express";
 const router = express.Router();
 
 router.post("/user/sign-in", signIn);
+router.get("/user/check", checkJWT);
 
 router.post("/user/sign-up", signUp);
 router.get("/user/sign-up/validate-email/:token", validateEmailToken);
