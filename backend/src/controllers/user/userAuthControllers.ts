@@ -139,7 +139,7 @@ export const signUp = async (req: Request, res: Response) => {
       await sendMail({
          to: email,
          subject: "Confirm email",
-         text: `Thanks for creating account in live chat app. Please go to this link to authenticate your email ${process.env.FRONTEND_URL}/confirm-email/${newUser.ConfirmEmailToken?.token}`,
+         text: `Thanks for creating account in nextpress chat app. Please go to this link to authenticate your email ${process.env.FRONTEND_URL}/confirm-email/${newUser.ConfirmEmailToken?.token}`,
       });
       res.status(200).json("Email sent successfully");
    } catch (error) {

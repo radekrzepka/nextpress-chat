@@ -5,7 +5,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <div className="flex min-h-screen flex-col justify-between">
          <div>
             <header className="flex w-full flex-col items-center pt-6 text-center">
-               <h1 className="text-4xl font-bold text-white">Live chat app</h1>
+               <h1 className="text-4xl font-bold text-white">
+                  Nextpress chat app
+               </h1>
                <p className="mx-auto mt-2 text-lg text-gray-300 lg:w-1/2">
                   Your go-to live chat app where you can effortlessly chat with
                   friends and create groups for endless conversations. Connect,
