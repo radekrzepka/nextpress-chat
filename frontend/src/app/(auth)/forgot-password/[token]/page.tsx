@@ -1,10 +1,18 @@
 import ResetPasswordForm from "@/modules/reset-password-form/reset-password-form";
+import apiFetch from "@/utils/fetch";
+import { notFound } from "next/navigation";
 
-const ForgotPasswordPage = ({
+const ForgotPasswordPage = async ({
    params: { token },
 }: {
    params: { token: string };
 }) => {
+   try {
+      await apiFetch(`/user/forgot-password/validate/${token}`);
+   } catch {
+      return notFound();
+   }
+
    return (
       <div className="mx-auto flex w-full flex-col items-center justify-center space-y-6">
          <div>
@@ -12,7 +20,7 @@ const ForgotPasswordPage = ({
                Reset your password
             </h2>
          </div>
-         <ResetPasswordForm />
+         <ResetPasswordForm token={token} />
       </div>
    );
 };
