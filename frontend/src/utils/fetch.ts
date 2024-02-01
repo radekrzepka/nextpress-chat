@@ -10,8 +10,6 @@ const apiFetch = async <T>(
    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
    const jwtToken = req ? req.cookies.get("JWT")?.value : getCookie("JWT");
 
-   console.log(jwtToken);
-
    const headers: HeadersInit = new Headers({
       "Content-Type": "application/json",
       credentials: "include",
@@ -26,6 +24,7 @@ const apiFetch = async <T>(
       const response = await fetch(`${baseUrl}${endpoint}`, {
          ...options,
          headers,
+         credentials: "include",
          cache: "no-store",
       });
 

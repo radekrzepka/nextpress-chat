@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
    return (
-      <div className="flex min-h-screen flex-col justify-between">
+      <div className="flex min-h-screen flex-col items-center justify-between">
          <div>
             <header className="flex w-full flex-col items-center pt-6 text-center">
                <h1 className="text-4xl font-bold text-white">
@@ -14,7 +14,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   share, and stay close - all in real-time. Let&apos;s start
                   chatting!
                </p>
-               <Image src={"/logo.png"} alt="Logo" width={200} height={200} />
+               <Image src="/logo.png" alt="Logo" width={200} height={200} />
             </header>
             <div className="mx-auto flex w-full justify-center">{children}</div>
          </div>
