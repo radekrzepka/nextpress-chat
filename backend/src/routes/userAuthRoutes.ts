@@ -6,7 +6,7 @@ import {
    validateForgotPasswordToken,
    validateEmailToken,
    updateForgottenPassword,
-} from "../../controllers/user/userAuthControllers";
+} from "../controllers/userAuthControllers";
 import express from "express";
 
 const router = express.Router();
