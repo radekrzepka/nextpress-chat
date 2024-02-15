@@ -1,14 +1,13 @@
 import { getCookie } from "cookies-next";
 import type { ApiError } from "@/types/api-error";
-import type { NextRequest } from "next/server";
 
 const apiFetch = async <T>(
    endpoint: string,
    options: RequestInit = {},
-   req?: NextRequest
+   JWT?: string | undefined
 ): Promise<T> => {
    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-   const jwtToken = req ? req.cookies.get("JWT")?.value : getCookie("JWT");
+   const jwtToken = JWT || getCookie("JWT");
 
    const headers: HeadersInit = new Headers({
       "Content-Type": "application/json",

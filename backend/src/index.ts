@@ -2,7 +2,6 @@ import type { Express } from "express";
 import express from "express";
 import userAuthRoutes from "./routes/userAuthRoutes";
 import messageRoutes from "./routes/messagesRoutes";
-import userRoutes from "./routes/userRoutes";
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -22,6 +21,5 @@ app.use(bodyParser.json());
 
 app.use(userAuthRoutes);
 app.use(messageRoutes);
-app.use(userRoutes);
 
 app.listen(port);

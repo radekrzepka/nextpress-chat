@@ -1,5 +1,4 @@
-import type { Response } from "express";
-import type { Request } from "@/types/request";
+import type { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -30,8 +29,6 @@ export const signIn = async (req: Request, res: Response) => {
          ConfirmEmailToken: { select: { isTokenAuthenticated: true } },
       },
    });
-
-   console.log(user);
 
    if (!user) {
       return res.status(401).json({ message: "Please provide correct email" });

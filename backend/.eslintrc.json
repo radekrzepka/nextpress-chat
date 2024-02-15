@@ -11,6 +11,7 @@
             "project": ["./tsconfig.json"]
          },
          "files": ["*.ts", "*.tsx"],
+         "excludedFiles": ["*.d.ts"],
          "rules": {
             "@typescript-eslint/array-type": ["warn", { "default": "generic" }],
             "@typescript-eslint/ban-types": "error",

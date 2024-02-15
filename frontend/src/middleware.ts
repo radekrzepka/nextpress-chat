@@ -3,8 +3,17 @@ import { NextResponse } from "next/server";
 import apiFetch from "./utils/fetch";
 
 const isUserLogIn = async (req: NextRequest) => {
+   const isJwtCookie = req.cookies.get("JWT")?.value;
+   if (!isJwtCookie) {
+      return false;
+   }
+
    try {
-      const status = await apiFetch<string>("/user/check", {}, req);
+      const status = await apiFetch<string>(
+         "/user/check",
+         {},
+         req.cookies.get("JWT")?.value
+      );
       return status === "Authenticated";
    } catch {
       return false;
