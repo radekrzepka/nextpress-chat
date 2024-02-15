@@ -1,7 +1,15 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import apiFetch from "@/utils/fetch";
+import { getJWT } from "@/utils/get-jwt";
 
-const Page = ({ params }: { params: { userId: string } }) => {
+const Page = async ({ params }: { params: { userId: string } }) => {
+   const getMessages = await apiFetch<Array<string>>(
+      `/user/messages/${params.userId}`,
+      {},
+      getJWT()
+   );
+
    return (
       <>
          <div className="flex items-center justify-between pb-4">
