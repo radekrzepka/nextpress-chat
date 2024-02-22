@@ -3,8 +3,8 @@ import http from "http";
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-import userAuthRoutes from "./routes/userAuthRoutes";
-import messageRoutes from "./routes/messagesRoutes";
+import { userRouter } from "./user/user.controller";
+import { messagesRouter } from "./messages/messages.controller";
 import { wsServer } from "./ws";
 
 const app = express();
@@ -20,8 +20,8 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(userAuthRoutes);
-app.use(messageRoutes);
+app.use(userRouter);
+app.use(messagesRouter);
 
 server.on("upgrade", (req, socket, head) => {
    wsServer.handleUpgrade(req, socket, head, ws => {

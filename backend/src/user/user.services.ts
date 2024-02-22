@@ -8,9 +8,9 @@ import {
    forgotPasswordSchema,
    tokenSchema,
    updateForgottenPasswordSchema,
-} from "../schemas/userAuthSchemas";
+} from "./user.schemas";
 import crypto from "crypto";
-import { sendMail } from "../services/email-services";
+import { sendMail } from "../email/email.services";
 
 const prisma = new PrismaClient();
 
