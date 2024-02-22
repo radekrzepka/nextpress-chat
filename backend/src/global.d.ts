@@ -14,9 +14,3 @@ declare global {
       }
    }
 }
-
-declare module "ws" {
-   interface WebSocket extends OriginalWebSocket {
-      userId: string;
-   }
-}

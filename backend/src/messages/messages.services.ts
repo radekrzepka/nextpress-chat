@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import type { Request, Response } from "express";
-import { messageSchema, userIdSchema } from "../schemas/messagesSchemas";
+import { messageSchema, userIdSchema } from "./messages.schemas";
 
 const prisma = new PrismaClient();
 
