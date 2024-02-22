@@ -1,14 +1,13 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import SendMessageForm from "@/modules/messages/send-message-form";
+import { cn } from "@/utils/cn";
 import apiFetch from "@/utils/fetch";
 import { getJWT } from "@/utils/get-jwt";
 
 const Page = async ({ params }: { params: { userId: string } }) => {
-   const getMessages = await apiFetch<Array<string>>(
-      `/user/messages/${params.userId}`,
-      {},
-      getJWT()
-   );
+   const messages = await apiFetch<
+      Array<{ type: "sent" | "received"; message: string; id: string }>
+   >(`/user/messages/${params.userId}`, {}, getJWT());
 
    return (
       <>
@@ -18,39 +17,32 @@ const Page = async ({ params }: { params: { userId: string } }) => {
             </h2>
          </div>
          <div className="flex-1 space-y-6 overflow-auto pt-6">
-            <div className="flex items-end space-x-2">
-               <Avatar>
-                  <AvatarImage
-                     alt="User 1"
-                     src="/placeholder.svg?height=40&width=40"
-                  />
-               </Avatar>
-               <div className="rounded-lg bg-gray-800 p-3">
-                  <p className="text-sm">Hello, how are you?</p>
+            {messages.map(({ id, message, type }) => (
+               <div
+                  key={id}
+                  className={`${cn(
+                     "flex items-end space-x-2",
+                     type === "sent" && "justify-end"
+                  )}`}
+               >
+                  <Avatar>
+                     <AvatarImage
+                        alt="User 1"
+                        src="/placeholder.svg?height=40&width=40"
+                     />
+                  </Avatar>
+                  <div
+                     className={`${cn(
+                        "rounded-lg bg-blue-600 p-3",
+                        type === "sent" && "bg-gray-800"
+                     )}`}
+                  >
+                     <p className="text-sm">{message}</p>
+                  </div>
                </div>
-            </div>
-            <div className="flex items-end justify-end space-x-2">
-               <div className="rounded-lg bg-blue-600 p-3">
-                  <p className="text-sm">I&apos;m doing well, thank you!</p>
-               </div>
-               <Avatar>
-                  <AvatarImage
-                     alt="User 2"
-                     src="/placeholder.svg?height=40&width=40"
-                  />
-               </Avatar>
-            </div>
+            ))}
          </div>
-         <div className="flex space-x-3 pt-6">
-            <input
-               className="flex-1 rounded-lg bg-white p-3 text-black"
-               placeholder="Write a message..."
-               type="text"
-            />
-            <Button className="w-20 bg-blue-600 py-6 text-white transition-colors duration-200 hover:bg-blue-500">
-               Send
-            </Button>
-         </div>
+         <SendMessageForm />
       </>
    );
 };

@@ -1,10 +1,49 @@
 import { PrismaClient } from "@prisma/client";
 import type { Request, Response } from "express";
+import { messageSchema, userIdSchema } from "../schemas/messagesSchemas";
 
 const prisma = new PrismaClient();
 
-export const getUserMessagesWithAnotherUser = (req: Request, res: Response) => {
-   res.status(200).json("XD");
+export const getUserMessagesWithAnotherUser = async (
+   req: Request,
+   res: Response
+) => {
+   const parsedReqParams = userIdSchema.safeParse(req.params.id);
+   if (!parsedReqParams.success) return res.status(400).json("Invalid request");
+   const userId = parsedReqParams.data;
+
+   const { id: loggedUserId } = req.user;
+
+   try {
+      const usersMessages = await prisma.message.findMany({
+         where: {
+            OR: [
+               { AND: [{ creatorId: loggedUserId }, { receiverId: userId }] },
+               { AND: [{ creatorId: userId }, { receiverId: loggedUserId }] },
+            ],
+         },
+         orderBy: {
+            createdAt: "asc",
+         },
+         select: {
+            id: true,
+            message: true,
+            createdAt: true,
+            creatorId: true,
+            receiverId: true,
+         },
+      });
+
+      const mappedMessages = usersMessages.map(msg => ({
+         ...msg,
+         type: msg.creatorId === loggedUserId ? "sent" : "received",
+      }));
+
+      res.status(200).json(mappedMessages);
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+   }
 };
 
 export const getUserLastMessages = async (req: Request, res: Response) => {
@@ -54,8 +93,6 @@ export const getUserLastMessages = async (req: Request, res: Response) => {
          }
       }
 
-      console.log(Object.fromEntries(lastMessages));
-
       res.status(200).json(Object.fromEntries(lastMessages));
    } catch (error) {
       console.error(error);
@@ -63,6 +100,69 @@ export const getUserLastMessages = async (req: Request, res: Response) => {
    }
 };
 
-export const getNewContacts = (req: Request, res: Response) => {
-   const { id: loggedUserId, username: loggedUserUsername } = req.user;
+export const getNewContacts = async (req: Request, res: Response) => {
+   const { id: loggedUserId } = req.user;
+
+   try {
+      const usersWithMessages = await prisma.message.findMany({
+         where: {
+            OR: [{ creatorId: loggedUserId }, { receiverId: loggedUserId }],
+         },
+         select: {
+            creatorId: true,
+            receiverId: true,
+         },
+      });
+
+      const contactedUserIds = new Set(
+         usersWithMessages.flatMap(msg => [msg.creatorId, msg.receiverId])
+      );
+
+      const newContacts = await prisma.user.findMany({
+         where: {
+            ConfirmEmailToken: {
+               isTokenAuthenticated: true,
+            },
+            NOT: {
+               id: {
+                  in: [...contactedUserIds],
+               },
+            },
+         },
+         select: {
+            id: true,
+            username: true,
+         },
+      });
+
+      res.status(200).json(newContacts);
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+   }
+};
+
+export const sentMessageToUser = async (req: Request, res: Response) => {
+   const { id: loggedUserId } = req.user;
+
+   const parsedReqParams = userIdSchema.safeParse(req.params.id);
+   if (!parsedReqParams.success) return res.status(400).json("Invalid request");
+   const userId = parsedReqParams.data;
+
+   const parsedReqBody = messageSchema.safeParse(req.body);
+   if (!parsedReqBody.success) return res.status(400).json("Invalid request");
+   const message = parsedReqBody.data;
+
+   try {
+      await prisma.message.create({
+         data: {
+            message,
+            receiverId: userId,
+            creatorId: loggedUserId as string,
+         },
+      });
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+   }
 };

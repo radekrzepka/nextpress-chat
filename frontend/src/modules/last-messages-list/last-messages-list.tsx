@@ -1,22 +1,11 @@
-"use client";
-
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { getLastUserMessages } from "@/api/get-last-user-messages";
 
-interface LastMessagesListProps {
-   lastMessages: Record<
-      string,
-      {
-         message: string;
-         createdAt: string;
-         userId: string;
-         type: "sent" | "received";
-      }
-   >;
-}
+const LastMessagesList = async () => {
+   const lastMessages = await getLastUserMessages();
 
-const LastMessagesList = ({ lastMessages }: LastMessagesListProps) => {
    return (
       <nav className="divide-y divide-gray-800">
          <div className="pt-6">
