@@ -8,6 +8,8 @@ import {
    forgotPasswordSchema,
    tokenSchema,
    updateForgottenPasswordSchema,
+   idSchema,
+   avatarIdSchema,
 } from "./user.schemas";
 import crypto from "crypto";
 import { sendMail } from "../email/email.services";
@@ -280,4 +282,104 @@ export const updateForgottenPassword = async (req: Request, res: Response) => {
    });
 
    res.status(200).json("Password updated successfully");
+};
+
+export const updateOnlineState = async (
+   userId: string,
+   newOnlineState: boolean
+) => {
+   const userData = await prisma.user.findFirst({
+      select: {
+         isOnline: true,
+      },
+      where: {
+         id: userId,
+      },
+   });
+
+   if (!userData) return false;
+
+   const isStateNew = userData.isOnline !== newOnlineState;
+
+   if (!isStateNew) return false;
+
+   await prisma.user.update({
+      data: {
+         isOnline: newOnlineState,
+      },
+      where: {
+         id: userId,
+      },
+   });
+
+   return isStateNew;
+};
+
+export const getLoggedUserData = (req: Request, res: Response) => {
+   const { email, isOnline, username, id, avatar } = req.user;
+
+   res.status(200).json({
+      email,
+      isOnline,
+      username,
+      userId: id,
+      avatar: avatar as number,
+   });
+};
+
+export const userDataQuery = async (userId: string) => {
+   const user = await prisma.user.findUnique({
+      where: {
+         id: userId,
+      },
+      select: {
+         email: true,
+         isOnline: true,
+         username: true,
+         id: true,
+         avatar: true,
+      },
+   });
+
+   return user;
+};
+
+export const getUserDataById = async (req: Request, res: Response) => {
+   const parsedReqUserId = idSchema.safeParse(req.params.id);
+
+   if (!parsedReqUserId.success) return res.status(400).json("Invalid request");
+   const id = parsedReqUserId.data;
+
+   const user = await userDataQuery(id);
+
+   if (!user) return res.status(400).json("Invalid request");
+
+   res.status(200).json({
+      email: user.email,
+      isOnline: user.isOnline,
+      username: user.username,
+      userId: user.id,
+      avatar: user.avatar as number,
+   });
+};
+
+export const updateAvatar = async (req: Request, res: Response) => {
+   const { id } = req.user;
+
+   const parsedReqAvatarId = avatarIdSchema.safeParse(req.params.avatarId);
+
+   if (!parsedReqAvatarId.success)
+      return res.status(400).json("Invalid request");
+   const avatarId = parsedReqAvatarId.data;
+
+   await prisma.user.update({
+      data: {
+         avatar: Number(avatarId),
+      },
+      where: {
+         id,
+      },
+   });
+
+   res.status(200).json({ message: "changed" });
 };

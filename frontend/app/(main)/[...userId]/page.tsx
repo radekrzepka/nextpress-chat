@@ -3,7 +3,7 @@ import { apiFetch } from "../../_utils/fetch";
 import { getJWT } from "../../_utils/get-jwt";
 import { SendMessagePage } from "../_modules/messages/send-message-page";
 import type { Message } from "../_schemas/message.schema";
-import { getUserDataById } from "../_api/get-user-data";
+import { getLoggedInUserData, getUserDataById } from "../_api/get-user-data";
 
 const Page = async ({ params }: { params: { userId: string } }) => {
    try {
@@ -14,8 +14,15 @@ const Page = async ({ params }: { params: { userId: string } }) => {
       );
 
       const userData = await getUserDataById(params.userId);
+      const currentUserData = await getLoggedInUserData();
 
-      return <SendMessagePage initialMessages={messages} userData={userData} />;
+      return (
+         <SendMessagePage
+            initialMessages={messages}
+            userData={userData}
+            currentUserData={currentUserData}
+         />
+      );
    } catch {
       return notFound();
    }

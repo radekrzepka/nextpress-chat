@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import type { IncomingMessage } from "http";
 import { verify, type JwtPayload } from "jsonwebtoken";
 import WebSocket from "ws";
 import { z } from "zod";
@@ -33,16 +34,29 @@ export const sentMessageToUser = async (
    messageContent: string
 ) => {
    try {
-      console.log(senderId, receiverId, messageContent);
-      await prisma.message.create({
+      const { id: newMessageId } = await prisma.message.create({
          data: {
             message: messageContent,
             receiverId,
             creatorId: senderId,
          },
       });
-      console.log("Message sent successfully");
+      return newMessageId;
    } catch (error) {
       console.error("Error saving message to DB:", error);
    }
+};
+
+export const sendUpdateMessage = (
+   wsServer: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>
+) => {
+   wsServer.clients.forEach(client => {
+      const extendedClient = client as ExtendedWebSocket;
+
+      if (extendedClient.readyState === WebSocket.OPEN) {
+         extendedClient.send(
+            JSON.stringify({ message: "Online state Update online state" })
+         );
+      }
+   });
 };

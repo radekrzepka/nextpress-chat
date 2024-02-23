@@ -3,16 +3,20 @@ import type { ExtendedWebSocket } from "./ws-services";
 import {
    authenticateWebSocket,
    messageSchema,
+   sendUpdateMessage,
    sentMessageToUser,
 } from "./ws-services";
+import {
+   getUserDataById,
+   updateOnlineState,
+   userDataQuery,
+} from "../user/user.services";
 
 export const wsServer = new WebSocketServer({ noServer: true });
 
-wsServer.on("connection", (ws: ExtendedWebSocket, req) => {
+wsServer.on("connection", async (ws: ExtendedWebSocket, req) => {
    const params = new URLSearchParams(req.url?.substring(req.url.indexOf("?")));
    const token = params.get("token");
-
-   console.log(token);
 
    if (token) {
       const userId = authenticateWebSocket(token);
@@ -20,6 +24,9 @@ wsServer.on("connection", (ws: ExtendedWebSocket, req) => {
          ws.close(1008, "Authentication failed");
          return;
       }
+
+      const stateIsUpdated = await updateOnlineState(userId, true);
+      if (stateIsUpdated) sendUpdateMessage(wsServer);
 
       ws.userId = userId;
    } else {
@@ -31,7 +38,6 @@ wsServer.on("connection", (ws: ExtendedWebSocket, req) => {
          const parsedData = JSON.parse(data.toString());
 
          const result = messageSchema.safeParse(parsedData);
-         console.log(parsedData, result);
 
          if (!result.success) {
             ws.send(JSON.stringify({ error: "Invalid message format" }));
@@ -40,11 +46,13 @@ wsServer.on("connection", (ws: ExtendedWebSocket, req) => {
 
          const { message, recipient } = result.data;
 
-         console.log({ dupa: ws.userId as string, recipient, message });
+         const newMessageId = await sentMessageToUser(
+            ws.userId as string,
+            recipient,
+            message
+         );
 
-         await sentMessageToUser(ws.userId as string, recipient, message);
-
-         wsServer.clients.forEach(client => {
+         wsServer.clients.forEach(async client => {
             const extendedClient = client as ExtendedWebSocket;
 
             if (
@@ -55,11 +63,19 @@ wsServer.on("connection", (ws: ExtendedWebSocket, req) => {
                const isUserOwner =
                   extendedClient.userId === (ws.userId as string);
 
+               let sendingUserUsername;
+
+               if (!isUserOwner) {
+                  const userData = await userDataQuery(recipient);
+                  sendingUserUsername = userData?.username;
+               }
+
                extendedClient.send(
                   JSON.stringify({
                      type: isUserOwner ? "sent" : "received",
-                     id: "XDDDDDDDDDDDDDDd",
+                     id: newMessageId,
                      message,
+                     username: sendingUserUsername,
                   })
                );
             }
@@ -70,7 +86,13 @@ wsServer.on("connection", (ws: ExtendedWebSocket, req) => {
       }
    });
 
-   ws.on("close", () => console.log("Client has disconnected!"));
+   ws.on("close", async () => {
+      const stateIsUpdated = await updateOnlineState(
+         ws.userId as string,
+         false
+      );
+      if (stateIsUpdated) sendUpdateMessage(wsServer);
+   });
 
    ws.onerror = error => {
       console.error("WebSocket error:", error);

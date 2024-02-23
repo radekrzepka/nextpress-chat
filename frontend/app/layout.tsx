@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
    return (
       <html lang="en">
-         <body className={cn(inter.className, "bg-gray-900 px-4 sm:px-6")}>
+         <body className={cn(inter.className, "mx-4 bg-gray-900 sm:mx-6")}>
             <ThemeProvider
                attribute="class"
                defaultTheme="dark"
@@ -25,7 +25,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
             >
                <QueryProvider>
                   {children}
-                  <Toaster richColors />
+                  <Toaster richColors position="top-right" />
                </QueryProvider>
             </ThemeProvider>
          </body>

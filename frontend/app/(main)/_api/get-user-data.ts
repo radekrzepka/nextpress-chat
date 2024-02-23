@@ -7,6 +7,7 @@ export const getLoggedInUserData = async () => {
       isOnline: boolean;
       username: string;
       userId: string;
+      avatar: number | null;
    }>("/user", {}, getJWT());
 };
 
@@ -16,5 +17,6 @@ export const getUserDataById = async (userId: string) => {
       isOnline: boolean;
       username: string;
       userId: string;
+      avatar: number | null;
    }>(`/user/get-data/${userId}`, {}, getJWT());
 };
