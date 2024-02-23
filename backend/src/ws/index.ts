@@ -12,6 +12,8 @@ wsServer.on("connection", (ws: ExtendedWebSocket, req) => {
    const params = new URLSearchParams(req.url?.substring(req.url.indexOf("?")));
    const token = params.get("token");
 
+   console.log(token);
+
    if (token) {
       const userId = authenticateWebSocket(token);
       if (!userId) {
@@ -23,12 +25,13 @@ wsServer.on("connection", (ws: ExtendedWebSocket, req) => {
    } else {
       ws.close(1008, "Authentication failed");
    }
-   ws.on("message", data => {
+   ws.on("message", async data => {
       try {
          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-base-to-string
          const parsedData = JSON.parse(data.toString());
 
          const result = messageSchema.safeParse(parsedData);
+         console.log(parsedData, result);
 
          if (!result.success) {
             ws.send(JSON.stringify({ error: "Invalid message format" }));
@@ -37,15 +40,28 @@ wsServer.on("connection", (ws: ExtendedWebSocket, req) => {
 
          const { message, recipient } = result.data;
 
-         wsServer.clients.forEach(async client => {
+         console.log({ dupa: ws.userId as string, recipient, message });
+
+         await sentMessageToUser(ws.userId as string, recipient, message);
+
+         wsServer.clients.forEach(client => {
             const extendedClient = client as ExtendedWebSocket;
 
             if (
                extendedClient.readyState === WebSocket.OPEN &&
-               extendedClient.userId === recipient
+               (extendedClient.userId === recipient ||
+                  extendedClient.userId === (ws.userId as string))
             ) {
-               extendedClient.send(`Message: ${message}`);
-               await sentMessageToUser(ws.userId as string, recipient, message);
+               const isUserOwner =
+                  extendedClient.userId === (ws.userId as string);
+
+               extendedClient.send(
+                  JSON.stringify({
+                     type: isUserOwner ? "sent" : "received",
+                     id: "XDDDDDDDDDDDDDDd",
+                     message,
+                  })
+               );
             }
          });
       } catch (error) {
