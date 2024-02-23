@@ -4,7 +4,7 @@ import { apiFetch } from "./app/_utils/fetch";
 
 const isUserLogIn = async (req: NextRequest) => {
    const isJwtCookie = req.cookies.get("JWT")?.value;
-   console.log(isJwtCookie);
+
    if (!isJwtCookie) {
       return false;
    }

@@ -10,6 +10,7 @@ export const getLastUserMessages = async () => {
             createdAt: string;
             userId: string;
             type: "sent" | "received";
+            isOnline: boolean;
          }
       >
    >("/user/last-messages-list", {}, getJWT());

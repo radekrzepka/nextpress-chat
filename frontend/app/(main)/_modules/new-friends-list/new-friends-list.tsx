@@ -26,7 +26,11 @@ export const NewFriendsList = async () => {
                            >
                               {contact.username}
                            </Link>
-                           <p className="text-xs text-green-400">Online</p>
+                           <p
+                              className={`text-xs ${contact.isOnline ? "text-green-400" : "text-red-400"}`}
+                           >
+                              {contact.isOnline ? "Online" : "Offline"}
+                           </p>
                         </div>
                      </div>
                   </li>

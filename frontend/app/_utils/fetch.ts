@@ -27,6 +27,8 @@ export const apiFetch = async <T>(
          cache: "no-store",
       });
 
+      console.log(response.ok, `${baseUrl}${endpoint}`);
+
       if (!response.ok) {
          const errorBody = (await response.json()) as Partial<ApiError>;
          const error: ApiError = {
