@@ -59,9 +59,23 @@ export const getUserLastMessages = async (req: Request, res: Response) => {
          },
          select: {
             message: true,
-            receiver: { select: { username: true, id: true } },
+            receiver: {
+               select: {
+                  username: true,
+                  id: true,
+                  isOnline: true,
+                  avatar: true,
+               },
+            },
             createdAt: true,
-            creator: { select: { username: true, id: true } },
+            creator: {
+               select: {
+                  username: true,
+                  id: true,
+                  isOnline: true,
+                  avatar: true,
+               },
+            },
          },
       });
 
@@ -72,6 +86,8 @@ export const getUserLastMessages = async (req: Request, res: Response) => {
             createdAt: Date;
             userId: string;
             type: "sent" | "received";
+            isOnline: boolean;
+            avatar: number | null;
          }
       >();
 
@@ -89,6 +105,8 @@ export const getUserLastMessages = async (req: Request, res: Response) => {
                createdAt: message.createdAt,
                userId: anotherUser.id,
                type: isUserCreator ? "sent" : "received",
+               isOnline: anotherUser.isOnline,
+               avatar: anotherUser.avatar,
             });
          }
       }
@@ -118,6 +136,8 @@ export const getNewContacts = async (req: Request, res: Response) => {
          usersWithMessages.flatMap(msg => [msg.creatorId, msg.receiverId])
       );
 
+      contactedUserIds.add(loggedUserId as string);
+
       const newContacts = await prisma.user.findMany({
          where: {
             ConfirmEmailToken: {
@@ -132,6 +152,8 @@ export const getNewContacts = async (req: Request, res: Response) => {
          select: {
             id: true,
             username: true,
+            isOnline: true,
+            avatar: true,
          },
       });
 

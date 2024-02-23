@@ -1,3 +1,4 @@
+import { authenticate } from "../middlewares/authenticate";
 import {
    signIn,
    checkJWT,
@@ -6,6 +7,9 @@ import {
    validateForgotPasswordToken,
    validateEmailToken,
    updateForgottenPassword,
+   getLoggedUserData,
+   getUserDataById,
+   updateAvatar,
 } from "./user.services";
 import express from "express";
 
@@ -26,3 +30,7 @@ userRouter.patch(
    "/user/forgot-password/update/:token",
    updateForgottenPassword
 );
+
+userRouter.get("/user", authenticate, getLoggedUserData);
+userRouter.get("/user/get-data/:id", getUserDataById);
+userRouter.patch("/user/update-avatar/:avatarId", authenticate, updateAvatar);

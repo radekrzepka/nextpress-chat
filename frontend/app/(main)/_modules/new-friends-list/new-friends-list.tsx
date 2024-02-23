@@ -16,7 +16,11 @@ export const NewFriendsList = async () => {
                         <Avatar>
                            <AvatarImage
                               alt={`Avatar of ${contact.username}`}
-                              src="/placeholder.svg?height=40&width=40"
+                              src={
+                                 contact.avatar
+                                    ? `/avatars/Avatar${contact.avatar}.svg`
+                                    : "/placeholder.svg?height=40&width=40"
+                              }
                            />
                         </Avatar>
                         <div>

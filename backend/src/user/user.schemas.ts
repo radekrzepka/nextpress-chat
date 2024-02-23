@@ -21,3 +21,7 @@ export const forgotPasswordSchema = z.object({
 export const updateForgottenPasswordSchema = z.object({
    newPassword: z.string().min(6).max(30),
 });
+
+export const idSchema = z.string();
+
+export const avatarIdSchema = z.string();

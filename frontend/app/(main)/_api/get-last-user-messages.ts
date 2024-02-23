@@ -11,6 +11,7 @@ export const getLastUserMessages = async () => {
             userId: string;
             type: "sent" | "received";
             isOnline: boolean;
+            avatar: number | null;
          }
       >
    >("/user/last-messages-list", {}, getJWT());
