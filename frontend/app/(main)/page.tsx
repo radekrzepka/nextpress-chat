@@ -1,5 +1,7 @@
+import { MainPage } from "./_modules/messages/main-page";
+
 const Page = () => {
-   return <>No chats yet</>;
+   return <MainPage />;
 };
 
 export default Page;

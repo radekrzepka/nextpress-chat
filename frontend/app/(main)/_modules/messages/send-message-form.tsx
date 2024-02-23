@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Button } from "@/_components/ui/button";
 import { useParams } from "next/navigation";
+import type { SendMessage } from "react-use-websocket";
 
 export interface SendMessageFormProps {
-   onSendMessage: any;
+   onSendMessage: SendMessage;
 }
 
 export const SendMessageForm = ({ onSendMessage }: SendMessageFormProps) => {
@@ -11,11 +12,12 @@ export const SendMessageForm = ({ onSendMessage }: SendMessageFormProps) => {
    const params = useParams<{ userId: Array<string> }>();
 
    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault(); // Prevent the form from causing a page reload
+      e.preventDefault();
       if (message.trim()) {
          onSendMessage(
             JSON.stringify({ message, recipient: params.userId.at(0) })
          );
+         setMessage("");
       }
    };
 
