@@ -93,7 +93,10 @@ export const ChangeAvatarDialog = ({
                   }
                />
             </Avatar>
-            <div className="text-xl font-medium">Welcome, {username}</div>
+            <p className="flex flex-col">
+               <span className="text-xl font-medium">Welcome, {username}</span>
+               <span className="text-left text-xs">Change your avatar</span>
+            </p>
          </button>
       </>
    );
