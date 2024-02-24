@@ -29,4 +29,4 @@ server.on("upgrade", (req, socket, head) => {
    });
 });
 
-server.listen(port, () => console.log(`Server is running on port ${port}`));
+server.listen(port);

@@ -6,11 +6,7 @@ import {
    sendUpdateMessage,
    sentMessageToUser,
 } from "./ws-services";
-import {
-   getUserDataById,
-   updateOnlineState,
-   userDataQuery,
-} from "../user/user.services";
+import { updateOnlineState, userDataQuery } from "../user/user.services";
 
 export const wsServer = new WebSocketServer({ noServer: true });
 
@@ -63,19 +59,24 @@ wsServer.on("connection", async (ws: ExtendedWebSocket, req) => {
                const isUserOwner =
                   extendedClient.userId === (ws.userId as string);
 
-               let sendingUserUsername;
-
-               if (!isUserOwner) {
-                  const userData = await userDataQuery(recipient);
-                  sendingUserUsername = userData?.username;
-               }
+               const wsUserData = await userDataQuery(ws.userId as string);
+               const recipientUserData = await userDataQuery(recipient);
 
                extendedClient.send(
                   JSON.stringify({
-                     type: isUserOwner ? "sent" : "received",
                      id: newMessageId,
                      message,
-                     username: sendingUserUsername,
+                     createdAt: new Date(),
+                     creatorId: isUserOwner
+                        ? wsUserData?.id
+                        : recipientUserData?.id,
+                     receiverId: isUserOwner
+                        ? recipientUserData?.id
+                        : wsUserData?.id,
+                     type: isUserOwner ? "sent" : "received",
+                     sendingUserUsername: !isUserOwner
+                        ? wsUserData?.username
+                        : recipientUserData?.username,
                   })
                );
             }
@@ -91,6 +92,7 @@ wsServer.on("connection", async (ws: ExtendedWebSocket, req) => {
          ws.userId as string,
          false
       );
+
       if (stateIsUpdated) sendUpdateMessage(wsServer);
    });
 

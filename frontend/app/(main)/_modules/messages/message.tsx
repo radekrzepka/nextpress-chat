@@ -48,11 +48,11 @@ export const Message = ({
          </Avatar>
          <div
             className={`${cn(
-               "rounded-lg bg-blue-600 p-3",
-               message.type === "sent" && "bg-gray-800"
+               "max-w-xs rounded-lg p-3 sm:max-w-sm md:max-w-md lg:max-w-lg",
+               message.type === "sent" ? "bg-gray-800" : "bg-blue-600"
             )}`}
          >
-            <p className="text-sm">{message.message}</p>
+            <p className="break-words text-sm">{message.message}</p>
          </div>
       </div>
    );

@@ -33,19 +33,25 @@ export const LastMessagesList = async () => {
                                  }
                               />
                            </Avatar>
-                           <div>
-                              <Link className="font-medium" href={`/${userId}`}>
+                           <div className="min-w-0 flex-1">
+                              <Link
+                                 className="block font-medium"
+                                 href={`/${userId}`}
+                              >
                                  {user}
                               </Link>
-                              <p className="text-xs text-gray-400">
-                                 {formatDistanceToNow(createdAt)} ago
-                              </p>
+                              <div className="flex items-center justify-between">
+                                 <span className=" truncate pr-4 text-sm text-blue-500">
+                                    {type === "sent" ? "You: " : ""}
+                                    {message}
+                                 </span>
+                                 <span className="whitespace-nowrap text-xs text-gray-400">
+                                    {formatDistanceToNow(createdAt)} ago
+                                 </span>
+                              </div>
                            </div>
                         </div>
-                        <p className="ml-[3.75rem] text-sm text-blue-500">
-                           {type === "sent" && "You: "}
-                           {message}
-                        </p>
+
                         <p
                            className={`ml-[3.75rem] text-xs ${isOnline ? "text-green-400" : "text-red-400"}`}
                         >

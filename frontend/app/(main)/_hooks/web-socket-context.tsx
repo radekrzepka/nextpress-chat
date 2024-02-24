@@ -1,45 +1,47 @@
 "use client";
 
-import type { Dispatch, SetStateAction } from "react";
-import { useEffect } from "react";
+import React, { createContext, useContext, useEffect } from "react";
+import type { SendMessage } from "react-use-websocket";
 import useWebSocketBase from "react-use-websocket";
-import type { Message } from "../_schemas/message.schema";
+import { getCookie } from "cookies-next";
 import { newMessageSchema } from "../_schemas/message.schema";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { getCookie } from "cookies-next";
 
-const scrollToBottom = () => {
+export const scrollToBottom = () => {
    const element = document.getElementById("message-container");
    if (element) {
       element.scrollTop = element.scrollHeight;
    }
 };
 
-export const useWebSocket = ({
-   setMessages,
+type WebSocketContextType = {
+   sendMessage: SendMessage;
+   lastMessage: MessageEvent<unknown> | null;
+};
+
+const WebSocketContext = createContext<WebSocketContextType | null>(null);
+
+export const useWebSocketContext = () => {
+   const context = useContext(WebSocketContext);
+   if (context === null) {
+      throw new Error(
+         "useWebSocketContext must be used within a WebSocketProvider"
+      );
+   }
+   return context;
+};
+
+export const WebSocketProvider = ({
+   children,
 }: {
-   setMessages?: Dispatch<SetStateAction<Array<Message>>>;
+   children: React.ReactNode;
 }) => {
    const JWT = getCookie("JWT");
-
    const { sendMessage, lastMessage } = useWebSocketBase(
       `${process.env.NEXT_PUBLIC_WS_SERVER_URL}?token=${JWT}`
    );
-
    const router = useRouter();
-
-   const notificationSound = new Audio("/message-sound-effect.mp3");
-
-   useEffect(() => {
-      const container = document.getElementById("message-container");
-      if (!container) return;
-
-      const observer = new MutationObserver(scrollToBottom);
-      observer.observe(container, { childList: true });
-
-      return () => observer.disconnect();
-   }, []);
 
    useEffect(() => {
       if (lastMessage !== null) {
@@ -55,13 +57,14 @@ export const useWebSocket = ({
 
             const parsedMessage = parseResult.data;
 
-            setMessages && setMessages(prev => prev.concat(parsedMessage));
             router.refresh();
             scrollToBottom();
 
+            const notificationSound = new Audio("/message-sound-effect.mp3");
+
             if (parsedMessage.type === "received") {
                toast.info(
-                  `${parsedMessage.username} sent you message: ${parsedMessage.message}`,
+                  `${parsedMessage.sendingUserUsername} sent you message: ${parsedMessage.message}`,
                   {
                      position: "top-right",
                   }
@@ -73,12 +76,17 @@ export const useWebSocket = ({
             console.error("Failed to parse the message data:", error);
          }
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [lastMessage, setMessages, router]);
+   }, [lastMessage, router]);
 
    useEffect(() => {
       scrollToBottom();
    }, []);
 
-   return { sendMessage };
+   const value = { sendMessage, lastMessage };
+
+   return (
+      <WebSocketContext.Provider value={value}>
+         {children}
+      </WebSocketContext.Provider>
+   );
 };

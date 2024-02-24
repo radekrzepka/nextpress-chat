@@ -4,7 +4,7 @@ import { deleteCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { Button } from "./button";
 
-const LogOutButton = () => {
+export const LogOutButton = () => {
    const router = useRouter();
    return (
       <Button
@@ -18,5 +18,3 @@ const LogOutButton = () => {
       </Button>
    );
 };
-
-export default LogOutButton;
