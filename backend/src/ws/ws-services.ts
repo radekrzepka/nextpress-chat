@@ -11,7 +11,7 @@ export declare class ExtendedWebSocket extends WebSocket {
 }
 
 export const messageSchema = z.object({
-   message: z.string(),
+   message: z.string().min(1).max(10000),
    recipient: z.string().uuid(),
 });
 

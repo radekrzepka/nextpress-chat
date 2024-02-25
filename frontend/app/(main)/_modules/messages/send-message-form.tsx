@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/_components/ui/button";
 import { useParams } from "next/navigation";
 import type { SendMessage } from "react-use-websocket";
+import { toast } from "sonner";
 
 export interface SendMessageFormProps {
    onSendMessage: SendMessage;
@@ -13,6 +14,11 @@ export const SendMessageForm = ({ onSendMessage }: SendMessageFormProps) => {
 
    const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
+      if (message.length > 10000) {
+         toast.error("To long message");
+         return;
+      }
+
       if (message.trim()) {
          onSendMessage(
             JSON.stringify({ message, recipient: params.userId.at(0) })
