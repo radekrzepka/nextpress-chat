@@ -6,6 +6,14 @@ import cookieParser from "cookie-parser";
 import { userRouter } from "./user/user.controller";
 import { messagesRouter } from "./messages/messages.controller";
 import { wsServer } from "./ws";
+import { rateLimit } from "express-rate-limit";
+
+const limiter = rateLimit({
+   windowMs: 60 * 1000,
+   limit: 100,
+   standardHeaders: "draft-7",
+   legacyHeaders: false,
+});
 
 const app = express();
 const server = http.createServer(app);
@@ -19,6 +27,7 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+app.use(limiter);
 app.use(bodyParser.json());
 app.use(userRouter);
 app.use(messagesRouter);
