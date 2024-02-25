@@ -32,6 +32,8 @@ app.use(bodyParser.json());
 app.use(userRouter);
 app.use(messagesRouter);
 
+app.set("trust proxy", 1);
+
 server.on("upgrade", (req, socket, head) => {
    wsServer.handleUpgrade(req, socket, head, ws => {
       wsServer.emit("connection", ws, req);
