@@ -59,9 +59,6 @@ export const WebSocketProvider = ({
 
             router.refresh();
             scrollToBottom();
-
-            const notificationSound = new Audio("/message-sound-effect.mp3");
-
             if (parsedMessage.type === "received") {
                toast.info(
                   `${parsedMessage.sendingUserUsername} sent you message: ${parsedMessage.message}`,
@@ -69,8 +66,6 @@ export const WebSocketProvider = ({
                      position: "top-right",
                   }
                );
-
-               notificationSound.play();
             }
          } catch (error) {
             console.error("Failed to parse the message data:", error);
