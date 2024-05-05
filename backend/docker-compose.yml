@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-   nextpress_backend:
-      container_name: nextpress_backend
+   nextpress-backend:
+      container_name: nextpress-backend
       build: .
       ports:
          - "3001:3001"
@@ -14,17 +14,18 @@ services:
          - MAIL_PASSWORD=${MAIL_PASSWORD}
          - FRONTEND_URL=${FRONTEND_URL}
       depends_on:
-         - nextpress_database
-   nextpress_database:
+         - nextpress-database
+   nextpress-database:
+      container_name: nextpress-database
       image: postgres:16
       ports:
          - "54322:5432"
       volumes:
-         - nextpress_data:/var/lib/postgresql/data
+         - nextpress-data:/var/lib/postgresql/data
       environment:
          - POSTGRES_USER=${POSTGRES_USER}
          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
          - POSTGRES_DB=${POSTGRES_DB}
 
 volumes:
-   nextpress_data:
+   nextpress-data:
