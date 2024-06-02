@@ -1,11 +1,10 @@
-version: "3.8"
-
 services:
    nextpress-backend:
       container_name: nextpress-backend
       build: .
       ports:
          - "3001:3001"
+      restart: always
       environment:
          - DATABASE_URL=${DATABASE_URL}
          - PORT=${PORT}
@@ -20,6 +19,7 @@ services:
       image: postgres:16
       ports:
          - "54322:5432"
+      restart: always
       volumes:
          - nextpress-data:/var/lib/postgresql/data
       environment:
