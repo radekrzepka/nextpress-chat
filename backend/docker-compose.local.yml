@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+   nextpress-database:
+      container_name: nextpress-database-local
+      image: postgres:16
+      ports:
+         - "54322:5432"
+      restart: always
+      volumes:
+         - nextpress-data-local:/var/lib/postgresql/data
+      environment:
+         - POSTGRES_USER=radek
+         - POSTGRES_PASSWORD=ZAQ!2wx
+         - POSTGRES_DB=nextpress-chat
+
+volumes:
+   nextpress-data-local:

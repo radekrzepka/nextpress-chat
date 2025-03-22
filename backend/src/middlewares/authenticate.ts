@@ -19,7 +19,7 @@ export const authenticate = async (
    try {
       const decoded = jwt.verify(
          JWT,
-         process.env.JWT_SECRET_KEY as string
+         process.env.JWT_SECRET_KEY
       ) as jwt.JwtPayload;
       const userId = decoded.userId as string;
 
@@ -51,7 +51,7 @@ export const authenticateWebSocket = async (request: IncomingMessage) => {
    try {
       const decoded = jwt.verify(
          token,
-         process.env.JWT_SECRET_KEY as string
+         process.env.JWT_SECRET_KEY
       ) as jwt.JwtPayload;
       const userId = decoded.userId as string;
 

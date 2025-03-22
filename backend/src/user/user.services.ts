@@ -52,11 +52,9 @@ export const signIn = async (req: Request, res: Response) => {
       ? 365 * 24 * MILLISECONDS_IN_HOURS
       : 1 * MILLISECONDS_IN_HOURS;
 
-   const token = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET_KEY as string,
-      { expiresIn: tokenDuration }
-   );
+   const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: tokenDuration,
+   });
 
    res.status(200);
    res.json(token);
@@ -72,7 +70,7 @@ export const checkJWT = async (req: Request, res: Response) => {
    try {
       const decoded = jwt.verify(
          JWT,
-         process.env.JWT_SECRET_KEY as string
+         process.env.JWT_SECRET_KEY
       ) as jwt.JwtPayload;
       const userId = decoded.userId as string;
 
@@ -359,7 +357,7 @@ export const getUserDataById = async (req: Request, res: Response) => {
       isOnline: user.isOnline,
       username: user.username,
       userId: user.id,
-      avatar: user.avatar as number,
+      avatar: user.avatar,
    });
 };
 

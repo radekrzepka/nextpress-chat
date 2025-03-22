@@ -43,7 +43,7 @@ wsServer.on("connection", async (ws: ExtendedWebSocket, req) => {
          const { message, recipient } = result.data;
 
          const newMessageId = await sentMessageToUser(
-            ws.userId as string,
+            ws.userId,
             recipient,
             message
          );
@@ -54,12 +54,11 @@ wsServer.on("connection", async (ws: ExtendedWebSocket, req) => {
             if (
                extendedClient.readyState === WebSocket.OPEN &&
                (extendedClient.userId === recipient ||
-                  extendedClient.userId === (ws.userId as string))
+                  extendedClient.userId === ws.userId)
             ) {
-               const isUserOwner =
-                  extendedClient.userId === (ws.userId as string);
+               const isUserOwner = extendedClient.userId === ws.userId;
 
-               const wsUserData = await userDataQuery(ws.userId as string);
+               const wsUserData = await userDataQuery(ws.userId);
                const recipientUserData = await userDataQuery(recipient);
 
                extendedClient.send(
@@ -88,10 +87,7 @@ wsServer.on("connection", async (ws: ExtendedWebSocket, req) => {
    });
 
    ws.on("close", async () => {
-      const stateIsUpdated = await updateOnlineState(
-         ws.userId as string,
-         false
-      );
+      const stateIsUpdated = await updateOnlineState(ws.userId, false);
 
       if (stateIsUpdated) sendUpdateMessage(wsServer);
    });

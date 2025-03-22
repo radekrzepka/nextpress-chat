@@ -17,10 +17,7 @@ export const messageSchema = z.object({
 
 export const authenticateWebSocket = (token: string): string | null => {
    try {
-      const decoded = verify(
-         token,
-         process.env.JWT_SECRET_KEY as string
-      ) as JwtPayload;
+      const decoded = verify(token, process.env.JWT_SECRET_KEY) as JwtPayload;
       return decoded.userId as string;
    } catch (error) {
       console.error("Failed to authenticate WebSocket connection:", error);

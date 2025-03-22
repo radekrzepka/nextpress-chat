@@ -136,7 +136,7 @@ export const getNewContacts = async (req: Request, res: Response) => {
          usersWithMessages.flatMap(msg => [msg.creatorId, msg.receiverId])
       );
 
-      contactedUserIds.add(loggedUserId as string);
+      contactedUserIds.add(loggedUserId);
 
       const newContacts = await prisma.user.findMany({
          where: {
@@ -180,7 +180,7 @@ export const sentMessageToUser = async (req: Request, res: Response) => {
          data: {
             message,
             receiverId: userId,
-            creatorId: loggedUserId as string,
+            creatorId: loggedUserId,
          },
       });
    } catch (error) {
